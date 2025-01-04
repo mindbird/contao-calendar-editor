@@ -1,8 +1,8 @@
 <?php
 
-namespace DanielGausi\CalendarEditorBundle\Models;
+namespace Mindbird\CalendarEditorBundle\Models;
 
-use CalendarModel;
+use Contao\CalendarModel;
 use function is_array;
 
 class CalendarModelEdit extends CalendarModel
