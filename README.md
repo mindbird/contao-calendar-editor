@@ -1,4 +1,4 @@
-> Updated version for contao 4.13 based on https://github.com/DanielGausi/Contao-CalendarEditor
+> Updated version for contao 5.3 based on https://github.com/mindbird/Contao-CalendarEditor
 
 # Contao-CalendarEditor
 
