@@ -1,0 +1,3 @@
+mindbird_calendar_editor:
+  resource: "@MindbirdCalendarEditorBundle/Controller/"
+  type: annotation

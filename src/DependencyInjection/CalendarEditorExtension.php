@@ -1,6 +1,6 @@
 <?php
 
-namespace DanielGausi\CalendarEditorBundle\DependencyInjection;
+namespace Mindbird\CalendarEditorBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -18,6 +18,6 @@ class CalendarEditorExtension extends Extension
             $container,
             new FileLocator(__DIR__ . '/../../config')
         );
-        $loader->load('services.yml');
+        $loader->load('services.yaml');
     }
 }

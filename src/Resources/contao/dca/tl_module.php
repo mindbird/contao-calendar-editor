@@ -1,11 +1,11 @@
-<?php 
+<?php
 
 /**
- * This file is part of 
- * 
+ * This file is part of
+ *
  * CalendarEditorBundle
  * @copyright  Daniel Gaußmann 2018
- * @author     Daniel Gaußmann (Gausi) 
+ * @author     Daniel Gaußmann (Gausi)
  * @package    Calendar_Editor
  * @license    LGPL-3.0-or-later
  * @see        https://github.com/DanielGausi/Contao-CalendarEditor
@@ -15,16 +15,18 @@
  * (c) Leo Feyer, LGPL-3.0-or-later
  *
  */
-
-
+use Contao\Backend;
+use Contao\System;
+use \Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use \Symfony\Component\DependencyInjection\ContainerAwareTrait;
 /**
  * Add palettes to tl_module
  */
 
- $GLOBALS['TL_DCA']['tl_module']['palettes']['calendarEdit']        =  $GLOBALS['TL_DCA']['tl_module']['palettes']['calendar'].';{edit_legend},caledit_add_jumpTo; {edit_holidays},cal_holidayCalendar' ; 
+ $GLOBALS['TL_DCA']['tl_module']['palettes']['calendarEdit']        =  $GLOBALS['TL_DCA']['tl_module']['palettes']['calendar'].';{edit_legend},caledit_add_jumpTo; {edit_holidays},cal_holidayCalendar' ;
  $GLOBALS['TL_DCA']['tl_module']['palettes']['EventReaderEditLink'] = '{title_legend},name,headline,type;{config_legend},cal_calendar,caledit_showDeleteLink,caledit_showCloneLink';
  $GLOBALS['TL_DCA']['tl_module']['palettes']['EventHiddenList']     = $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist'];
- $GLOBALS['TL_DCA']['tl_module']['palettes']['EventEditor']         
+ $GLOBALS['TL_DCA']['tl_module']['palettes']['EventEditor']
  = '{title_legend},name,headline,type;{redirect_legend},jumpTo;'
    .'{config_legend},cal_calendar,caledit_mandatoryfields,caledit_alternateCSSLabel,caledit_usePredefinedCss;'
    .'{caledit_setting_publish},caledit_allowPublish,caledit_allowDelete,caledit_allowClone,caledit_sendMail;'
@@ -32,8 +34,8 @@
    // some options from the calendarfield extension
    .'caledit_useDatePicker ;'
    .'{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
-  
- 
+
+
 
  $GLOBALS['TL_DCA']['tl_module']['subpalettes']['caledit_usePredefinedCss'] = 'caledit_cssValues';
  $GLOBALS['TL_DCA']['tl_module']['subpalettes']['caledit_sendMail']         = 'caledit_mailRecipient';
@@ -151,7 +153,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['caledit_alternateCSSLabel'] = array
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['caledit_alternateCSSLabel'],
 	'inputType'               => 'text',
 	'eval'                    => array('maxlength'=>64, 'tl_class'=>'clr w50'),
-	'sql'					  => "varchar(64) NOT NULL default ''"	
+	'sql'					  => "varchar(64) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['caledit_usePredefinedCss'] = array
@@ -165,11 +167,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['caledit_usePredefinedCss'] = array
 $GLOBALS['TL_DCA']['tl_module']['fields']['caledit_cssValues'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['caledit_cssValues'],
-	'inputType'               => 'multiColumnWizard',	
+	'inputType'               => 'multiColumnWizard',
 	'eval'                    => array
       (
         'tl_class' => 'w50',
-		'columnsCallback' => array('calendar_eventeditor', 'getCSSValues')        
+		'columnsCallback' => array('calendar_eventeditor', 'getCSSValues')
        ),
 	 'sql'					  => "text NULL"
 );
@@ -255,15 +257,13 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['caledit_dateImageSRC'] = array
 	'sql'                     => "binary(16) NULL"
 );
 
-//'caledit_dateDirection, 
-//caledit_dateIncludeCSS, caledit_dateIncludeCSSTheme, 
+//'caledit_dateDirection,
+//caledit_dateIncludeCSS, caledit_dateIncludeCSSTheme,
 //caledit_dateImage, caledit_dateImageSRC'
 
-
-
-
-class calendar_eventeditor extends Backend
+class calendar_eventeditor extends Backend //implements ContainerAwareInterface
 {
+    //use ContainerAwareTrait;
 
 	/**
 	 * Import the back end user object
@@ -271,9 +271,9 @@ class calendar_eventeditor extends Backend
 	public function __construct()
 	{
 		parent::__construct();
-		$this->import('BackendUser', 'User');
+		//$this->import('BackendUser', 'User');
 	}
-	
+
 	/**
 	 * Return all event templates as array
 	 * @param object
@@ -282,8 +282,8 @@ class calendar_eventeditor extends Backend
 	public function getEventEditTemplates()
 	{
 		return $this->getTemplateGroup('eventEdit_');
-	}	
-	
+	}
+
 	public function getCSSValues()
 	{
 		$columnFields = null;
@@ -297,23 +297,25 @@ class calendar_eventeditor extends Backend
               'inputType' => 'text',
               'eval' => array('style' => 'width:100px')
             ),
-			'value' => array (              
+			'value' => array (
               'label' => &$GLOBALS['TL_LANG']['tl_module']['css_value'],
-              'mandatory' => true,              
+              'mandatory' => true,
 			  'inputType' => 'text',
-              'eval' => array('rgxp' => 'alpha', 'style' => 'width:70px') 
+              'eval' => array('rgxp' => 'alpha', 'style' => 'width:70px')
             )
           );
 		return $columnFields;
 	}
 	public function getCalendars()
 	{
-		if (!$this->User->isAdmin && !is_array($this->User->calendars))
-		{
-			return array();
-		}
+        // Get the BackendUser from the Symfony container
+        $user = System::getContainer()->get('security.token_storage')->getToken()->getUser();
 
-		$arrCalendars = array();
+        if (!$user instanceof BackendUser || (!$user->isAdmin && !is_array($user->calendars))) {
+            return [];
+        }
+
+        $arrCalendars = array();
 		$objCalendars = $this->Database->execute("SELECT id, title FROM tl_calendar ORDER BY title");
 
 		while ($objCalendars->next())
@@ -333,17 +335,27 @@ class calendar_eventeditor extends Backend
      */
     public function getConfigFiles()
 	{
-		$arrConfigs = array();
-		
-		//$arrFiles = scan(TL_ROOT . '/system/config/');
-		$arrFiles = scan(TL_ROOT.'/vendor/mindbird/contao-calendar-editor/src/Resources/contao/tinyMCE/');// . '/system/config/');
+        $arrConfigs = array();
 
-		foreach( $arrFiles as $file ) {
-			//if (substr($file, 0, 4) == 'tiny') {
-				$arrConfigs[] = basename($file, '.php');
-			//}
-		}
-		return $arrConfigs;
+        // Get the root directory from the Symfony container
+        $rootDir = System::getContainer()->getParameter('kernel.project_dir');
+
+        // Define the path to the tinyMCE configuration files
+        $tinyMCEPath = $rootDir . '/vendor/mindbird/contao-calendar-editor/src/Resources/contao/tinyMCE/';
+
+        // Check if the directory exists
+        if (is_dir($tinyMCEPath)) {
+            // Use scandir to list files in the directory
+            $arrFiles = scandir($tinyMCEPath);
+
+            foreach ($arrFiles as $file) {
+                // Include only files with the .php extension
+                if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
+                    $arrConfigs[] = basename($file, '.php');
+                }
+            }
+        }
+        return $arrConfigs;
 	}
 }
 
