@@ -2,9 +2,9 @@ name: PHP Composer
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "contao5" ]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "contao5" ]
 
 permissions:
   contents: read
