@@ -12,10 +12,6 @@ services:
       calls:
         - [ setContainer, [ '@Psr\Container\ContainerInterface' ] ]
 
-    Symfony\Component\DependencyInjection\ContainerAwareInterface:
-      calls:
-        - [ setContainer, [ '@service_container' ] ]
-
 
   caledit.service.auth:
     class: DanielGausi\CalendarEditorBundle\Services\CheckAuthService
