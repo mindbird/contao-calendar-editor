@@ -17,7 +17,7 @@
 		"contao/core-bundle": "~5.3" ,
 		"contao/calendar-bundle": "~5.3",
 		"menatwork/contao-multicolumnwizard-bundle": "^3.0",
-		"hofff/contao-calendarfield": "dev-contao5"
+		"hofff/contao-calendarfield": "dev-contao5 as 5.0.0"
 	},
 	"autoload": {
 		"psr-4": {
