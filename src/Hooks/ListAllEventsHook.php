@@ -27,7 +27,7 @@ class ListAllEventsHook extends Frontend
             return $events;
         }
 
-        $this->import('FrontendUser', 'User');
+        $this->import('Contao\FrontendUser', 'User');
 
         /** @var CheckAuthService $checkAuthService */
         $checkAuthService = System::getContainer()->get('caledit.service.auth');

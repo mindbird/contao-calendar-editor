@@ -60,7 +60,7 @@ class ModuleEventReaderEdit extends Events
 		$this->Template->editRef = '';
 		
 		// FE user is logged in
-		$this->import('FrontendUser', 'User');
+		$this->import('Contao\FrontendUser', 'User');
         $time = time();
 		
 		// Get current event

@@ -36,7 +36,7 @@ class ModuleCalenderEdit extends ModuleCalendar
     {
         /** @var CheckAuthService $checkAuthService */
         $checkAuthService = System::getContainer()->get('caledit.service.auth');
-		$this->import('FrontendUser', 'User');			
+		$this->import('Contao\FrontendUser', 'User');
 		$this->allowElapsedEvents = false;
 		$this->allowEditEvents = false;
 				

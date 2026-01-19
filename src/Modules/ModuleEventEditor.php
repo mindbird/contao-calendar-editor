@@ -1305,7 +1305,7 @@ class ModuleEventEditor extends Events
 
         $fatalError = False;
 
-        $this->import('FrontendUser', 'User');
+        $this->import('Contao\FrontendUser', 'User');
         $this->allowedCalendars = $this->getCalendars($this->User);
         if (count($this->allowedCalendars) == 0) {
             $fatalError = True;
