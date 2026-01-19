@@ -523,7 +523,7 @@ class ModuleEventEditor extends Events
         $this->Template = new FrontendTemplate($this->strTemplate);
 
         // 1. Get Data from post/get
-        $newDate = $this->Input->get('add');
+        $newDate = Input->get('add');
 
         $newEventData = [];
         $NewContentData = [];
@@ -567,20 +567,20 @@ class ModuleEventEditor extends Events
         $jumpToSelection = '';
 
         // after this: Overwrite it with the post data
-        if ($this->Input->post('FORM_SUBMIT') == 'caledit_submit') {
-            $newEventData['startDate'] = $this->Input->post('startDate');
-            $newEventData['endDate'] = $this->Input->post('endDate');
-            $newEventData['startTime'] = $this->Input->post('startTime');
-            $newEventData['endTime'] = $this->Input->post('endTime');
-            $newEventData['title'] = $this->Input->post('title');
-            $newEventData['location'] = $this->Input->post('location');
-            $newEventData['teaser'] = $this->Input->postHtml('teaser', true);
-            $NewContentData['text'] = $this->Input->postHtml('details', true);
-            $newEventData['cssClass'] = $this->Input->post('cssClass');
-            $newEventData['pid'] = $this->Input->post('pid');
-            $newEventData['published'] = $this->Input->post('published');
-            $saveAs = $this->Input->post('saveAs') ?? 0;
-            $jumpToSelection = $this->Input->post('jumpToSelection');
+        if (Input->post('FORM_SUBMIT') == 'caledit_submit') {
+            $newEventData['startDate'] = Input->post('startDate');
+            $newEventData['endDate'] = Input->post('endDate');
+            $newEventData['startTime'] = Input->post('startTime');
+            $newEventData['endTime'] = Input->post('endTime');
+            $newEventData['title'] = Input->post('title');
+            $newEventData['location'] = Input->post('location');
+            $newEventData['teaser'] = Input->postHtml('teaser', true);
+            $NewContentData['text'] = Input->postHtml('details', true);
+            $newEventData['cssClass'] = Input->post('cssClass');
+            $newEventData['pid'] = Input->post('pid');
+            $newEventData['published'] = Input->post('published');
+            $saveAs = Input->post('saveAs') ?? 0;
+            $jumpToSelection = Input->post('jumpToSelection');
 
             if ($published && !$this->caledit_allowPublish) {
                 // this should never happen, except the FE user is manipulating
@@ -807,7 +807,7 @@ class ModuleEventEditor extends Events
             // from http://pastebin.com/HcjkHLQK
             // via https://github.com/contao/core/issues/5086
             // Convert date formats into timestamps (check the eval setting first -> #3063)
-            if ($this->Input->post('FORM_SUBMIT') == 'caledit_submit') {
+            if (Input->post('FORM_SUBMIT') == 'caledit_submit') {
                 $rgxp = $field['eval']['rgxp'] ?? '';
                 if (($rgxp == 'date' || $rgxp == 'time' || $rgxp == 'datim') && $field['value'] != '') {
                     $objDate = new Date(Input::post($field['name']), $GLOBALS['TL_CONFIG'][$rgxp . 'Format']);
@@ -817,7 +817,7 @@ class ModuleEventEditor extends Events
 
             $objWidget = new $strClass($this->prepareForWidget($field, $field['name'], $field['value']));
             // Validate widget
-            if ($this->Input->post('FORM_SUBMIT') == 'caledit_submit') {
+            if (Input->post('FORM_SUBMIT') == 'caledit_submit') {
                 $objWidget->validate();
                 if ($objWidget->hasErrors()) {
                     $doNotSubmit = true;
@@ -843,7 +843,7 @@ class ModuleEventEditor extends Events
         $this->Template->submit = $GLOBALS['TL_LANG']['MSC']['caledit_saveData'];
         $this->Template->calendars = $this->allowedCalendars;
 
-        if ((!$doNotSubmit) && ($this->Input->post('FORM_SUBMIT') == 'caledit_submit')) {
+        if ((!$doNotSubmit) && (Input->post('FORM_SUBMIT') == 'caledit_submit')) {
             // everything seems to be ok, so we can add the POST Data
             // into the Database
             if (!FE_USER_LOGGED_IN) {
@@ -878,7 +878,7 @@ class ModuleEventEditor extends Events
             $this->generateRedirect($jumpToSelection, $dbId);
         } else {
             // Do NOT Submit
-            if ($this->Input->post('FORM_SUBMIT') == 'caledit_submit') {
+            if (Input->post('FORM_SUBMIT') == 'caledit_submit') {
                 $this->Template->InfoClass = 'tl_error';
                 if ($this->Template->InfoMessage == '') {
                     $this->Template->InfoMessage = $GLOBALS['TL_LANG']['MSC']['caledit_error'];
@@ -945,7 +945,7 @@ class ModuleEventEditor extends Events
         $captchaField['eval']['required'] = $captchaField['eval']['mandatory'];
         $objWidget = new $strClass($this->prepareForWidget($captchaField, $captchaField['name']));
         // Validate widget
-        if ($this->Input->post('FORM_SUBMIT') == 'caledit_submit') {
+        if (Input->post('FORM_SUBMIT') == 'caledit_submit') {
             $objWidget->validate();
             if ($objWidget->hasErrors()) {
                 $doNotSubmit = true;
@@ -959,7 +959,7 @@ class ModuleEventEditor extends Events
         $this->Template->deleteWarning = $GLOBALS['TL_LANG']['MSC']['caledit_deleteWarning'];
 
 
-        if ((!$doNotSubmit) && ($this->Input->post('FORM_SUBMIT') == 'caledit_submit')) {
+        if ((!$doNotSubmit) && (Input->post('FORM_SUBMIT') == 'caledit_submit')) {
             // everything seems to be ok, so we can delete this event
 
             // for notification e-mail
@@ -984,7 +984,7 @@ class ModuleEventEditor extends Events
             $this->generateRedirect('', ''); // jump to the default page
         } else {
             // Do NOT Submit
-            if ($this->Input->post('FORM_SUBMIT') == 'caledit_submit') {
+            if (Input->post('FORM_SUBMIT') == 'caledit_submit') {
                 $this->Template->InfoClass = 'tl_error';
                 $this->Template->InfoMessage = $GLOBALS['TL_LANG']['MSC']['caledit_error'];
             }
@@ -1037,7 +1037,7 @@ class ModuleEventEditor extends Events
         $fields = [];
         $jumpToSelection = '';
 
-        if ($this->Input->post('FORM_SUBMIT') == 'caledit_submit') {
+        if (Input->post('FORM_SUBMIT') == 'caledit_submit') {
             for ($i = 1; $i <= 10; $i++) {
                 $newDates['start' . $i] = Input::post('start' . $i);
                 $newDates['end' . $i] = Input::post('end' . $i);
@@ -1133,7 +1133,7 @@ class ModuleEventEditor extends Events
 
             $objWidget = new $strClass($this->prepareForWidget($field, $field['name'], $field['value']));
             // Validate widget
-            if ($this->Input->post('FORM_SUBMIT') == 'caledit_submit') {
+            if (Input->post('FORM_SUBMIT') == 'caledit_submit') {
                 $objWidget->validate();
                 if ($objWidget->hasErrors()) {
                     $doNotSubmit = true;
@@ -1161,7 +1161,7 @@ class ModuleEventEditor extends Events
 
         $this->Template->submit = $GLOBALS['TL_LANG']['MSC']['caledit_saveData'];
 
-        if ((!$doNotSubmit) && ($this->Input->post('FORM_SUBMIT') == 'caledit_submit')) {
+        if ((!$doNotSubmit) && (Input->post('FORM_SUBMIT') == 'caledit_submit')) {
             // everything seems to be ok, so we can add the POST Data
             // into the Database
             if (!FE_USER_LOGGED_IN) {
@@ -1291,14 +1291,14 @@ class ModuleEventEditor extends Events
         $this->addTinyMCE($this->caledit_tinMCEtemplate);
         // Check for "add" or "edit"
 
-        $editID = $this->Input->get('edit');
+        $editID = Input->get('edit');
 
-        $deleteID = $this->Input->get('delete');
+        $deleteID = Input->get('delete');
         if ($deleteID) {
             $editID = $deleteID;
         }
 
-        $cloneID = $this->Input->get('clone');
+        $cloneID = Input->get('clone');
         if ($cloneID) {
             $editID = $cloneID;
         }
