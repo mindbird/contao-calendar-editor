@@ -3,6 +3,7 @@
 namespace DanielGausi\CalendarEditorBundle\Hooks;
 
 use Contao\Frontend;
+use Contao\PageModel;
 use Contao\System;
 use DanielGausi\CalendarEditorBundle\Models\CalendarModelEdit;
 use DanielGausi\CalendarEditorBundle\Services\CheckAuthService;
@@ -55,7 +56,8 @@ class ListAllEventsHook extends Frontend
                     ->limit(1)
                     ->execute($calendarModel->id);
                 if ($page->numRows === 1) {
-                    $jumpPages[$currentPid] = $this->generateFrontendUrl($page->row(), '');
+                    $page = PageModel::findById($page->id);
+                    $jumpPages[$currentPid] = $page->getFrontendUrl();
                 }
             } else {
                 // no editing allowed in this calendar
