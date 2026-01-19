@@ -62,9 +62,10 @@ class ModuleEventReaderEdit extends Events
 		// FE user is logged in
 		$this->import('Contao\FrontendUser', 'User');
         $time = time();
-		
+
+        $isBackendRequest = System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''));
 		// Get current event
-		$objEvent = $this->Database->prepare("SELECT *, author AS authorId, (SELECT title FROM tl_calendar WHERE tl_calendar.id=tl_calendar_events.pid) AS calendar, (SELECT name FROM tl_user WHERE id=author) author FROM tl_calendar_events WHERE pid IN(" . implode(',', array_map('intval', $this->cal_calendar)) . ") AND (id=? OR alias=?)" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : ""))
+		$objEvent = $this->Database->prepare("SELECT *, author AS authorId, (SELECT title FROM tl_calendar WHERE tl_calendar.id=tl_calendar_events.pid) AS calendar, (SELECT name FROM tl_user WHERE id=author) author FROM tl_calendar_events WHERE pid IN(" . implode(',', array_map('intval', $this->cal_calendar)) . ") AND (id=? OR alias=?)" . (!$isBackendRequest ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : ""))
 								   ->limit(1)
 								   ->execute((is_numeric(Input::get('events')) ? Input::get('events') : 0), Input::get('events'), $time, $time);
 
