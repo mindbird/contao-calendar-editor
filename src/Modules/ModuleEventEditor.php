@@ -5,6 +5,7 @@ namespace DanielGausi\CalendarEditorBundle\Modules;
 use AllowDynamicProperties;
 use BackendTemplate;
 use Contao\Email;
+use Contao\Events;
 use Contao\Input;
 use Contao\StringUtil;
 use Contao\System;
@@ -12,8 +13,7 @@ use ContentModel;
 use DanielGausi\CalendarEditorBundle\Models\CalendarEventsModelEdit;
 use DanielGausi\CalendarEditorBundle\Models\CalendarModelEdit;
 use DanielGausi\CalendarEditorBundle\Services\CheckAuthService;
-use Date;
-use Events;
+use Contao\Date;
 use FrontendTemplate;
 use Symfony\Component\HttpFoundation\Request;
 
