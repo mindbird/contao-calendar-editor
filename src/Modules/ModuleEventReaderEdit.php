@@ -2,14 +2,15 @@
 
 namespace DanielGausi\CalendarEditorBundle\Modules;
 
-use BackendTemplate;
+use Contao\BackendTemplate;
 use Contao\Events;
+use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\StringUtil;
 use Contao\System;
 use DanielGausi\CalendarEditorBundle\Models\CalendarModelEdit;
 use DanielGausi\CalendarEditorBundle\Services\CheckAuthService;
-use FrontendTemplate;
+use Symfony\Component\HttpFoundation\Request;
 
 class ModuleEventReaderEdit extends Events
 {
@@ -26,7 +27,7 @@ class ModuleEventReaderEdit extends Events
 	 */
 	public function generate()
 	{
-		if (TL_MODE == 'BE') {
+		if (System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))) {
 			$objTemplate = new BackendTemplate('be_wildcard');
 
 			$objTemplate->wildcard = '### EVENT READER EDIT LINK ###';

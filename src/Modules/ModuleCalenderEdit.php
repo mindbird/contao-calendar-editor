@@ -2,14 +2,15 @@
 
 namespace DanielGausi\CalendarEditorBundle\Modules;
 
-use BackendTemplate;
+use Contao\BackendTemplate;
 use Contao\Date;
+use Contao\ModuleCalendar;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 use DanielGausi\CalendarEditorBundle\Models\CalendarModelEdit;
 use DanielGausi\CalendarEditorBundle\Services\CheckAuthService;
-use ModuleCalendar;
+use Symfony\Component\HttpFoundation\Request;
 
 class ModuleCalenderEdit extends ModuleCalendar
 {
@@ -165,7 +166,7 @@ class ModuleCalenderEdit extends ModuleCalendar
 	
 	public function generate(): string
     {
-        if (TL_MODE == 'BE') {
+        if (System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))) {
             $objTemplate = new BackendTemplate('be_wildcard');
 
             $objTemplate->wildcard = '### CALENDAR WITH FE EDITING ###';

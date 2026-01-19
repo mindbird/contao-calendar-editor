@@ -2,13 +2,15 @@
 
 namespace DanielGausi\CalendarEditorBundle\Modules;
 
-use BackendTemplate;
-use CalendarEventsModel;
-use CalendarModel;
-use Config;
+use Contao\BackendTemplate;
+use Contao\CalendarEventsModel;
+use Contao\CalendarModel;
+use Contao\Config;
+use Contao\ModuleEventlist;
+use Contao\PageModel;
 use Contao\StringUtil;
-use ModuleEventlist;
-use PageModel;
+use Contao\System;
+use Symfony\Component\HttpFoundation\Request;
 
 class ModuleHiddenEventlist extends ModuleEventlist
 {
@@ -126,7 +128,7 @@ class ModuleHiddenEventlist extends ModuleEventlist
      */
     public function generate()
     {
-        if (TL_MODE == 'BE') {
+        if (System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))) {
             $objTemplate = new BackendTemplate('be_wildcard');
 
             $objTemplate->wildcard = '### UNPULISHED EVENT LIST ###';
@@ -138,7 +140,7 @@ class ModuleHiddenEventlist extends ModuleEventlist
             return $objTemplate->parse();
         }
 
-        $this->cal_calendar = $this->sortOutProtected(deserialize($this->cal_calendar, true));
+        $this->cal_calendar = $this->sortOutProtected(StringUtil::deserialize($this->cal_calendar, true));
 
         // Return if there are no calendars
         if (!is_array($this->cal_calendar) || count($this->cal_calendar) < 1) {

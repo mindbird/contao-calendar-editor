@@ -2,6 +2,7 @@
 
 namespace DanielGausi\CalendarEditorBundle\Modules;
 
+use AllowDynamicProperties;
 use BackendTemplate;
 use Contao\Email;
 use Contao\Input;
@@ -14,7 +15,9 @@ use DanielGausi\CalendarEditorBundle\Services\CheckAuthService;
 use Date;
 use Events;
 use FrontendTemplate;
+use Symfony\Component\HttpFoundation\Request;
 
+#[AllowDynamicProperties]
 class ModuleEventEditor extends Events
 {
     /**
@@ -31,7 +34,7 @@ class ModuleEventEditor extends Events
      */
     public function generate()
     {
-        if (TL_MODE == 'BE') {
+        if (System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))) {
             $objTemplate = new BackendTemplate('be_wildcard');
             $objTemplate->wildcard = '### EVENT EDITOR ###';
             $objTemplate->title = $this->headline;
@@ -385,7 +388,7 @@ class ModuleEventEditor extends Events
     {
         // maximum length of alias in the DB: 128 chars
         // we use only 110 chars here, as we may add "-<ID>" in case of a collision
-        $value = substr(standardize($value), 0, 110);
+        $value = substr(StringUtil::standardize($value), 0, 110);
 
         if ($this->aliasExists($value)) {
             // alias already exists, we have to modify it.
@@ -601,7 +604,7 @@ class ModuleEventEditor extends Events
             }
         }
 
-        $mandfields = deserialize($this->caledit_mandatoryfields);
+        $mandfields = StringUtil::deserialize($this->caledit_mandatoryfields);
         $mandTeaser = (is_array($mandfields) && array_intersect(array('teaser'), $mandfields));
         $mandLocation = (is_array($mandfields) && array_intersect(array('location'), $mandfields));
         $mandDetails = (is_array($mandfields) && array_intersect(array('details'), $mandfields));
@@ -1246,7 +1249,7 @@ class ModuleEventEditor extends Events
             $notification->subject = sprintf($GLOBALS['TL_LANG']['MSC']['caledit_MailSubjectNew'], $host);
         }
 
-        $arrRecipients = trimsplit(',', $this->caledit_mailRecipient);
+        $arrRecipients = StringUtil::trimsplit(',', $this->caledit_mailRecipient);
         $mText = $GLOBALS['TL_LANG']['MSC']['caledit_MailEventdata'] . " \n\n";
         if (!FE_USER_LOGGED_IN) {
             $mText .= $GLOBALS['TL_LANG']['MSC']['caledit_MailUnregisteredUser'] . " \n";
