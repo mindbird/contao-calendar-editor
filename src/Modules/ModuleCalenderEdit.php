@@ -156,7 +156,7 @@ class ModuleCalenderEdit extends ModuleCalendar
 			}
 			$arrDays[$strWeekClass][$i]['class'] = 'days active' . $strClass;
 			$arrDays[$strWeekClass][$i]['href'] = $this->strLink . '?day=' . $intKey;
-			$arrDays[$strWeekClass][$i]['title'] = sprintf(specialchars($GLOBALS['TL_LANG']['MSC']['cal_events']), count($events));
+			$arrDays[$strWeekClass][$i]['title'] = sprintf(StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['cal_events']), count($events));
 			$arrDays[$strWeekClass][$i]['events'] = $events;
 			$arrDays[$strWeekClass][$i]['holidayEvents'] = $holidayEvents;
 		}
