@@ -3,14 +3,15 @@
 namespace DanielGausi\CalendarEditorBundle\Modules;
 
 use AllowDynamicProperties;
-use BackendTemplate;
+use Contao\Calendar;
+use Contao\BackendTemplate;
+use Contao\ContentModel;
 use Contao\Email;
 use Contao\Events;
 use Contao\Input;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Widget;
-use ContentModel;
 use DanielGausi\CalendarEditorBundle\Models\CalendarEventsModelEdit;
 use DanielGausi\CalendarEditorBundle\Models\CalendarModelEdit;
 use DanielGausi\CalendarEditorBundle\Services\CheckAuthService;
@@ -531,8 +532,7 @@ class ModuleEventEditor extends Events
                 $this->Database->prepare("DELETE FROM tl_content WHERE id=?")->execute($oldContentId);
             }
         }
-        $this->import('Calendar');
-        $this->Calendar->generateFeed($eventData['pid']);
+        (new Calendar())->generateFeed($eventData['pid']);
 
         return $returnID;
     }
@@ -993,8 +993,7 @@ class ModuleEventEditor extends Events
             // Delete event itself
             $this->Database->prepare("DELETE FROM tl_calendar_events WHERE id=?")->execute($id);
 
-            $this->import('Calendar');
-            $this->Calendar->generateFeed($pid);
+            (new Calendar())->generateFeed($pid);
 
             // Send Notification EMail
             if ($this->caledit_sendMail) {
