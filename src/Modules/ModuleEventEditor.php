@@ -7,6 +7,7 @@ use Contao\Calendar;
 use Contao\BackendTemplate;
 use Contao\ContentModel;
 use Contao\Email;
+use Contao\Environment;
 use Contao\Events;
 use Contao\Input;
 use Contao\StringUtil;
@@ -18,6 +19,8 @@ use DanielGausi\CalendarEditorBundle\Services\CheckAuthService;
 use Contao\Date;
 use Contao\FrontendTemplate;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Exception\ExceptionInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AllowDynamicProperties]
 class ModuleEventEditor extends Events
@@ -80,7 +83,18 @@ class ModuleEventEditor extends Events
      **/
     public function getEditorFrontendURLForEvent($event): ?string
     {
-        return $this->generateEventUrl($event);
+        return $this->generateFrontendUrlForEvent($event);
+    }
+
+    private function generateFrontendUrlForEvent(object $event, bool $absolute = false): string
+    {
+        try {
+            return System::getContainer()
+                ->get('contao.routing.content_url_generator')
+                ->generate($event, [], $absolute ? UrlGeneratorInterface::ABSOLUTE_URL : UrlGeneratorInterface::ABSOLUTE_PATH);
+        } catch (ExceptionInterface) {
+            return StringUtil::ampersand(Environment::get('requestUri'));
+        }
     }
 
     public function addTinyMCE($configuration): void
@@ -286,7 +300,7 @@ class ModuleEventEditor extends Events
                 $currentEventObject = CalendarEventsModelEdit::findByIdOrAlias($DBid);
 
                 if ($currentEventObject->published) {
-                    $jumpTo = $this->generateEventUrl($currentEventObject);
+                    $jumpTo = $this->generateFrontendUrlForEvent($currentEventObject);
                 } else {
                     // event is not published, so show it in the editor again
                     $jumpTo .= '?edit=' . $DBid;
@@ -362,11 +376,11 @@ class ModuleEventEditor extends Events
         $newEventData['alias'] = $currentEventObject->alias;
 
         $this->Template->CurrentTitle = $currentEventObject->title;
-        $this->Template->CurrentDate = $this->parseDate($GLOBALS['TL_CONFIG']['dateFormat'], $currentEventObject->startDate);
+        $this->Template->CurrentDate = Date::parse($GLOBALS['TL_CONFIG']['dateFormat'], $currentEventObject->startDate);
         $this->Template->CurrentPublished = $currentEventObject->published;
 
         if ($currentEventObject->published) {
-            $this->Template->CurrentEventLink = $this->generateEventUrl($currentEventObject);
+            $this->Template->CurrentEventLink = $this->generateFrontendUrlForEvent($currentEventObject);
             $this->Template->CurrentPublishedInfo = $GLOBALS['TL_LANG']['MSC']['caledit_publishedEvent'];
         } else {
             $this->Template->CurrentEventLink = '';
@@ -932,16 +946,16 @@ class ModuleEventEditor extends Events
         }
 
         // Fill fields with data from $currentEventObject
-        $startDate = $this->parseDate($GLOBALS['TL_CONFIG']['dateFormat'], $currentEventObject->startDate);
+        $startDate = Date::parse($GLOBALS['TL_CONFIG']['dateFormat'], $currentEventObject->startDate);
 
         $pid = $currentEventObject->pid;
         $id = $currentEventObject->id;
         $published = $currentEventObject->published;
 
-        $this->Template->CurrentEventLink = $this->generateEventUrl($currentEventObject);
+        $this->Template->CurrentEventLink = $this->generateFrontendUrlForEvent($currentEventObject);
 
         $this->Template->CurrentTitle = $currentEventObject->title;
-        $this->Template->CurrentDate = $this->parseDate($GLOBALS['TL_CONFIG']['dateFormat'], $currentEventObject->startDate);
+        $this->Template->CurrentDate = Date::parse($GLOBALS['TL_CONFIG']['dateFormat'], $currentEventObject->startDate);
 
         if ($published == '') {
             $this->Template->CurrentPublishedInfo = $GLOBALS['TL_LANG']['MSC']['caledit_unpublishedEvent'];
