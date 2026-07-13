@@ -14,7 +14,7 @@ use DanielGausi\CalendarEditorBundle\Models\CalendarEventsModelEdit;
 use DanielGausi\CalendarEditorBundle\Models\CalendarModelEdit;
 use DanielGausi\CalendarEditorBundle\Services\CheckAuthService;
 use Contao\Date;
-use FrontendTemplate;
+use Contao\FrontendTemplate;
 use Symfony\Component\HttpFoundation\Request;
 
 #[AllowDynamicProperties]
