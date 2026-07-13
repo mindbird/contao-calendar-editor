@@ -54,6 +54,11 @@ class ModuleEventEditor extends Events
         return parent::generate();
     }
 
+    private function isFrontendUserLoggedIn(): bool
+    {
+        return System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+    }
+
 
     /**
      * Returns an Event-URL for a given Event-Editor and a given Event
@@ -231,7 +236,7 @@ class ModuleEventEditor extends Events
                 return false;
             }
 
-            $result = ((!$objCalendar->caledit_onlyUser) || ((FE_USER_LOGGED_IN) && ($userIsAdmin || ($user->id == $currentObjectData->fe_user))));
+            $result = ((!$objCalendar->caledit_onlyUser) || (($this->isFrontendUserLoggedIn()) && ($userIsAdmin || ($user->id == $currentObjectData->fe_user))));
             if (!$result) {
                 $this->errorString = $GLOBALS['TL_LANG']['MSC']['caledit_OnlyUser'];
             }
@@ -758,7 +763,7 @@ class ModuleEventEditor extends Events
             $fields['saveAs']['options']['1'] = $GLOBALS['TL_LANG']['MSC']['caledit_saveAs'];
         }
 
-        if (!FE_USER_LOGGED_IN) {
+        if (!$this->isFrontendUserLoggedIn()) {
             $fields['captcha'] = [
                 'name' => 'captcha',
                 'inputType' => 'captcha',
@@ -846,7 +851,7 @@ class ModuleEventEditor extends Events
         if ((!$doNotSubmit) && (Input::post('FORM_SUBMIT') == 'caledit_submit')) {
             // everything seems to be ok, so we can add the POST Data
             // into the Database
-            if (!FE_USER_LOGGED_IN) {
+            if (!$this->isFrontendUserLoggedIn()) {
                 $newEventData['fe_user'] = ''; // no user
             } else {
                 $newEventData['fe_user'] = $this->User->id; // set the FE_user here
@@ -1075,7 +1080,7 @@ class ModuleEventEditor extends Events
             }
         }
 
-        if (!FE_USER_LOGGED_IN) {
+        if (!$this->isFrontendUserLoggedIn()) {
             $fields['captcha'] = [
                 'name' => 'captcha',
                 'inputType' => 'captcha',
@@ -1164,7 +1169,7 @@ class ModuleEventEditor extends Events
         if ((!$doNotSubmit) && (Input::post('FORM_SUBMIT') == 'caledit_submit')) {
             // everything seems to be ok, so we can add the POST Data
             // into the Database
-            if (!FE_USER_LOGGED_IN) {
+            if (!$this->isFrontendUserLoggedIn()) {
                 $currentEventData['fe_user'] = ''; // no user
             } else {
                 $currentEventData['fe_user'] = $this->User->id; // set the FE_user here
@@ -1176,7 +1181,7 @@ class ModuleEventEditor extends Events
             $newDatesMail = '';
 
             // overwrite User
-            if (!FE_USER_LOGGED_IN) {
+            if (!$this->isFrontendUserLoggedIn()) {
                 $currentEventData['fe_user'] = ''; // no user
             } else {
                 $currentEventData['fe_user'] = $this->User->id; // set the FE_user here
@@ -1251,7 +1256,7 @@ class ModuleEventEditor extends Events
 
         $arrRecipients = StringUtil::trimsplit(',', $this->caledit_mailRecipient);
         $mText = $GLOBALS['TL_LANG']['MSC']['caledit_MailEventdata'] . " \n\n";
-        if (!FE_USER_LOGGED_IN) {
+        if (!$this->isFrontendUserLoggedIn()) {
             $mText .= $GLOBALS['TL_LANG']['MSC']['caledit_MailUnregisteredUser'] . " \n";
         } else {
             $mText .= sprintf($GLOBALS['TL_LANG']['MSC']['caledit_MailUser'], $User) . " \n";
