@@ -60,6 +60,14 @@ class ModuleEventEditor extends Events
         return System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
     }
 
+    private function createFrontendTemplate(string $template): FrontendTemplate
+    {
+        $objTemplate = new FrontendTemplate($template);
+        $objTemplate->requestToken = System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue();
+
+        return $objTemplate;
+    }
+
 
     /**
      * Returns an Event-URL for a given Event-Editor and a given Event
@@ -526,7 +534,7 @@ class ModuleEventEditor extends Events
     {
         $this->strTemplate = $this->caledit_template;
 
-        $this->Template = new FrontendTemplate($this->strTemplate);
+        $this->Template = $this->createFrontendTemplate($this->strTemplate);
 
         // 1. Get Data from post/get
         $newDate = Input::get('add');
@@ -897,7 +905,7 @@ class ModuleEventEditor extends Events
     protected function handleDelete($currentEventObject)
     {
         $this->strTemplate = $this->caledit_delete_template;
-        $this->Template = new FrontendTemplate($this->strTemplate);
+        $this->Template = $this->createFrontendTemplate($this->strTemplate);
 
         if (!$this->caledit_allowDelete) {
             $this->Template->FatalError = $GLOBALS['TL_LANG']['MSC']['caledit_NoDelete'];
@@ -1001,7 +1009,7 @@ class ModuleEventEditor extends Events
     protected function handleClone($currentEventObject)
     {
         $this->strTemplate = $this->caledit_clone_template;
-        $this->Template = new FrontendTemplate($this->strTemplate);
+        $this->Template = $this->createFrontendTemplate($this->strTemplate);
 
         $currentID = $currentEventObject->id;
         $currentEventData = array();
@@ -1329,7 +1337,7 @@ class ModuleEventEditor extends Events
         // Fatal error, editing not allowed, abort.
         if ($fatalError) {
             $this->strTemplate = $this->caledit_template;
-            $this->Template = new FrontendTemplate($this->strTemplate);
+            $this->Template = $this->createFrontendTemplate($this->strTemplate);
             $this->Template->FatalError = $this->errorString;
             return;
         }
