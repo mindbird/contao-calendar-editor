@@ -9,6 +9,7 @@ use Contao\Events;
 use Contao\Input;
 use Contao\StringUtil;
 use Contao\System;
+use Contao\Widget;
 use ContentModel;
 use DanielGausi\CalendarEditorBundle\Models\CalendarEventsModelEdit;
 use DanielGausi\CalendarEditorBundle\Models\CalendarModelEdit;
@@ -820,7 +821,7 @@ class ModuleEventEditor extends Events
                 }
             }
 
-            $objWidget = new $strClass($this->prepareForWidget($field, $field['name'], $field['value']));
+            $objWidget = new $strClass(Widget::getAttributesFromDca($field, $field['name'], $field['value']));
             // Validate widget
             if (Input::post('FORM_SUBMIT') == 'caledit_submit') {
                 $objWidget->validate();
@@ -948,7 +949,7 @@ class ModuleEventEditor extends Events
         $strClass = $GLOBALS['TL_FFL'][$captchaField['inputType']];
 
         $captchaField['eval']['required'] = $captchaField['eval']['mandatory'];
-        $objWidget = new $strClass($this->prepareForWidget($captchaField, $captchaField['name']));
+        $objWidget = new $strClass(Widget::getAttributesFromDca($captchaField, $captchaField['name']));
         // Validate widget
         if (Input::post('FORM_SUBMIT') == 'caledit_submit') {
             $objWidget->validate();
@@ -1136,7 +1137,7 @@ class ModuleEventEditor extends Events
                 }
             }
 
-            $objWidget = new $strClass($this->prepareForWidget($field, $field['name'], $field['value']));
+            $objWidget = new $strClass(Widget::getAttributesFromDca($field, $field['name'], $field['value']));
             // Validate widget
             if (Input::post('FORM_SUBMIT') == 'caledit_submit') {
                 $objWidget->validate();
