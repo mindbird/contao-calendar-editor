@@ -75,7 +75,11 @@ class ModuleHiddenEventlist extends ModuleEventlist
                 // Recurring events
                 if ($objEvents->recurring) {
                     $count = 0;
-                    $arrRepeat = StringUtil::deserialize($objEvents->repeatEach);
+                    $arrRepeat = StringUtil::deserialize($objEvents->repeatEach, true);
+
+                    if (!isset($arrRepeat['unit'], $arrRepeat['value']) || $arrRepeat['value'] < 1) {
+                        continue;
+                    }
 
                     while ($objEvents->endTime < $intEnd) {
                         if ($objEvents->recurrences > 0 && $count++ >= $objEvents->recurrences) {
