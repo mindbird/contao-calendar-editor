@@ -68,6 +68,11 @@ class ModuleEventEditor extends Events
         return $objTemplate;
     }
 
+    private function normalizeCheckboxValue(mixed $value): int
+    {
+        return (int) (bool) $value;
+    }
+
 
     /**
      * Returns an Event-URL for a given Event-Editor and a given Event
@@ -433,6 +438,7 @@ class ModuleEventEditor extends Events
 
         // important (otherwise details/teaser will be mixed up in calendars or event lists)
         $eventData['source'] = 'default';
+        $eventData['published'] = $this->normalizeCheckboxValue($eventData['published'] ?? null);
 
         // needed later!
         $startDate = new Date($eventData['startDate'], $GLOBALS['TL_CONFIG']['dateFormat']);
@@ -489,6 +495,8 @@ class ModuleEventEditor extends Events
                 $eventData = $this->{$callback[0]}->{$callback[1]}($eventData);
             }
         }
+
+        $eventData['published'] = $this->normalizeCheckboxValue($eventData['published'] ?? null);
 
         if ($oldId === '') {
             // create new entry
@@ -571,7 +579,7 @@ class ModuleEventEditor extends Events
             if ($published && !$this->caledit_allowPublish) {
                 // editing a published event with no publish-rights
                 // will hide the event again
-                $published = '';
+                $published = 0;
             }
         } else {
             $this->Template->CurrentPublishedInfo = $GLOBALS['TL_LANG']['MSC']['caledit_newEvent'];
@@ -592,7 +600,7 @@ class ModuleEventEditor extends Events
             $NewContentData['text'] = Input::postHtml('details', true);
             $newEventData['cssClass'] = Input::post('cssClass');
             $newEventData['pid'] = Input::post('pid');
-            $newEventData['published'] = Input::post('published');
+            $newEventData['published'] = $this->normalizeCheckboxValue(Input::post('published'));
             $saveAs = Input::post('saveAs') ?? 0;
             $jumpToSelection = Input::post('jumpToSelection');
 
@@ -756,7 +764,7 @@ class ModuleEventEditor extends Events
                 'name' => 'published',
                 'label' => '', // $GLOBALS['TL_LANG']['MSC']['caledit_published'],
                 'inputType' => 'checkbox',
-                'value' => $newEventData['published'] ?? ''
+                'value' => $this->normalizeCheckboxValue($newEventData['published'] ?? null)
             ];
             $fields['published']['options']['1'] = $GLOBALS['TL_LANG']['MSC']['caledit_published'];
         }
@@ -866,9 +874,7 @@ class ModuleEventEditor extends Events
                 $newEventData['fe_user'] = $this->User->id; // set the FE_user here
             }
 
-            if (is_null($newEventData['published'])) {
-                $newEventData['published'] = '';
-            }
+            $newEventData['published'] = $this->normalizeCheckboxValue($newEventData['published'] ?? null);
 
             if (is_null($newEventData['location'])) {
                 $newEventData['location'] = '';
@@ -1043,7 +1049,7 @@ class ModuleEventEditor extends Events
 
         if ($published && !$this->caledit_allowPublish) {
             // cloning a published event without publish-rights will result in a lot of unpublished events
-            $published = '';
+            $published = 0;
         }
 
         // current event stored - prepare the formular
@@ -1196,10 +1202,7 @@ class ModuleEventEditor extends Events
                 $currentEventData['fe_user'] = $this->User->id; // set the FE_user here
             }
             // Set Publish-Value
-            $currentEventData['published'] = $published;
-            if (is_null($currentEventData['published'])) {
-                $currentEventData['published'] = '';
-            }
+            $currentEventData['published'] = $this->normalizeCheckboxValue($published);
 
             // convert the existing timestamps into Strings, so that PutinDB can use them again
             if ($currentEventData['startTime']) {
