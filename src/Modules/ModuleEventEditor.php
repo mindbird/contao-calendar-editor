@@ -77,6 +77,16 @@ class ModuleEventEditor extends Events
         return (int) (bool) $value;
     }
 
+    private function getCurrentRequest(): string
+    {
+        return Environment::get('request');
+    }
+
+    private function getCurrentHost(): string
+    {
+        return Environment::get('host');
+    }
+
 
     /**
      * Returns an Event-URL for a given Event-Editor and a given Event
@@ -279,7 +289,7 @@ class ModuleEventEditor extends Events
 
     public function generateRedirect($userSetting, $DBid): void
     {
-        $jumpTo = preg_replace('/\?.*$/i', '', $this->Environment->request);
+        $jumpTo = preg_replace('/\?.*$/i', '', $this->getCurrentRequest());
 
         switch ($userSetting) {
             case "":
@@ -575,14 +585,14 @@ class ModuleEventEditor extends Events
 
             if ($this->caledit_allowDelete) {
                 // add a "Delete this event"-Link
-                $del = str_replace('?edit=', '?delete=', $this->Environment->request);
+                $del = str_replace('?edit=', '?delete=', $this->getCurrentRequest());
                 $this->Template->deleteRef = $del;
                 $this->Template->deleteLabel = $GLOBALS['TL_LANG']['MSC']['caledit_deleteLabel'];
                 $this->Template->deleteTitle = $GLOBALS['TL_LANG']['MSC']['caledit_deleteTitle'];
             }
 
             if ($this->caledit_allowClone) {
-                $cln = str_replace('?edit=', '?clone=', $this->Environment->request);
+                $cln = str_replace('?edit=', '?clone=', $this->getCurrentRequest());
                 $this->Template->cloneRef = $cln;
                 $this->Template->cloneLabel = $GLOBALS['TL_LANG']['MSC']['caledit_cloneLabel'];
                 $this->Template->cloneTitle = $GLOBALS['TL_LANG']['MSC']['caledit_cloneTitle'];
@@ -933,13 +943,13 @@ class ModuleEventEditor extends Events
         }
 
         // add a "Edit this event"-Link
-        $del = str_replace('?delete=', '?edit=', $this->Environment->request);
+        $del = str_replace('?delete=', '?edit=', $this->getCurrentRequest());
         $this->Template->editRef = $del;
         $this->Template->editLabel = $GLOBALS['TL_LANG']['MSC']['caledit_editLabel'];
         $this->Template->editTitle = $GLOBALS['TL_LANG']['MSC']['caledit_editTitle'];
 
         if ($this->caledit_allowClone) {
-            $cln = str_replace('?delete=', '?clone=', $this->Environment->request);
+            $cln = str_replace('?delete=', '?clone=', $this->getCurrentRequest());
             $this->Template->cloneRef = $cln;
             $this->Template->cloneLabel = $GLOBALS['TL_LANG']['MSC']['caledit_cloneLabel'];
             $this->Template->cloneTitle = $GLOBALS['TL_LANG']['MSC']['caledit_cloneTitle'];
@@ -1036,14 +1046,14 @@ class ModuleEventEditor extends Events
         $contentID = '';
 
         // add a "Edit this event"-Link
-        $del = str_replace('?clone=', '?edit=', $this->Environment->request);
+        $del = str_replace('?clone=', '?edit=', $this->getCurrentRequest());
         $this->Template->editRef = $del;
         $this->Template->editLabel = $GLOBALS['TL_LANG']['MSC']['caledit_editLabel'];
         $this->Template->editTitle = $GLOBALS['TL_LANG']['MSC']['caledit_editTitle'];
 
         if ($this->caledit_allowDelete) {
             // add a "Delete this event"-Link
-            $del = str_replace('?clone=', '?delete=', $this->Environment->request);
+            $del = str_replace('?clone=', '?delete=', $this->getCurrentRequest());
             $this->Template->deleteRef = $del;
             $this->Template->deleteLabel = $GLOBALS['TL_LANG']['MSC']['caledit_deleteLabel'];
             $this->Template->deleteTitle = $GLOBALS['TL_LANG']['MSC']['caledit_deleteTitle'];
@@ -1267,7 +1277,7 @@ class ModuleEventEditor extends Events
         $notification = new Email();
         $notification->from = $GLOBALS['TL_ADMIN_EMAIL'];
 
-        $host = $this->Environment->host;
+        $host = $this->getCurrentHost();
 
         if ($editID) {
             if ($editID == -1) {
