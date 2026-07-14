@@ -10,6 +10,7 @@ use Contao\Email;
 use Contao\Environment;
 use Contao\Events;
 use Contao\Input;
+use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Widget;
@@ -294,12 +295,10 @@ class ModuleEventEditor extends Events
         switch ($userSetting) {
             case "":
                 // Get current "jumpTo" page
-                $objPage = $this->Database->prepare("SELECT * FROM tl_page WHERE id=?")
-                    ->limit(1)
-                    ->execute($this->jumpTo);
+                $objPage = PageModel::findByPk($this->jumpTo);
 
-                if ($objPage->numRows) {
-                    $jumpTo = $this->generateFrontendUrl($objPage->row());
+                if ($objPage !== null) {
+                    $jumpTo = $objPage->getFrontendUrl();
                 }
                 break;
 

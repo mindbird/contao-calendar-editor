@@ -6,6 +6,7 @@ use Contao\BackendTemplate;
 use Contao\Events;
 use Contao\FrontendTemplate;
 use Contao\Input;
+use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 use DanielGausi\CalendarEditorBundle\Models\CalendarModelEdit;
@@ -107,11 +108,9 @@ class ModuleEventReaderEdit extends Events
             $strUrl = '';
 			if ($areEditLinksAllowed) {
 				// get the JumpToEdit-Page for this calendar
-				$objPage = $this->Database->prepare("SELECT * FROM tl_page WHERE id=(SELECT caledit_jumpTo FROM tl_calendar WHERE id=?)")
-								  ->limit(1)
-								  ->execute($calendarModel->id);
-				if ($objPage->numRows) {
-					$strUrl = $this->generateFrontendUrl($objPage->row(), '');
+				$objPage = PageModel::findByPk($calendarModel->caledit_jumpTo);
+				if ($objPage !== null) {
+					$strUrl = $objPage->getFrontendUrl();
 				}
 					
 				$this->Template->editRef = $strUrl.'?edit='.$objEvent->id;
